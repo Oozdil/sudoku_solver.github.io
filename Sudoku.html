@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{
+  font-family: Avenir, Heveltica, sans-serif;
+}
+h1 {
+  color: blue;
+  text-align: center;
+}
+button { 
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius:5px;
+  
+  
+}
+#button1{
+margin-right:20px;
+ background-color: #4CAF50; /* Green */
+}
+#button2{
+margin-left:20px;
+ background-color: #0476D0; /* Blue */
+}
+
+
+li:nth-child(n):nth-child(-n+9) {
+  border-top-width: 4px;
+}
+li:nth-child(n+73):nth-child(-n+81) {
+  border-bottom-width: 4px;
+}
+li:nth-child(3n) {
+  border-right-width: 4px;
+}
+li:nth-child(9n+1) {
+  border-left-width: 4px;
+}
+li:nth-child(n+19):nth-child(-n+27) {
+  border-bottom-width: 4px;
+}
+li:nth-child(n+46):nth-child(-n+54) {
+  border-bottom-width: 4px;
+}
+
+ul {
+  display: grid;
+  grid-template-columns: repeat(9, 5vw);
+  grid-template-rows: repeat(9, 5vw);
+  justify-content: center;
+  align-content: center;
+  grid-gap: 0rem;
+  list-style: none;
+  margin: 0 0 2vw;
+  padding: 0;
+  font-size: calc(2vw + 10px);
+}
+li {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  span {
+    margin-top: 0.4rem;
+  }  
+}
+
+.note {
+  background: #ddd;
+  font-family: monospace;
+  padding: 2em 5em;
+  font-size: 120%;
+  order: -1;
+ display: flex;
+  justify-content: center;
+}
+input{
+width:100%;
+height:90%;
+border:none;
+font-size: calc(2vw + 15px);
+justify-content: center;
+text-align: center;
+font-weight:bold;
+color:red;
+}
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+var  sudoku;
+$(document).ready(function(){
+  AddInputs();
+$("#button1").click(function(){
+location.reload();
+});
+
+
+
+
+  $("#button2").click(function(){
+  
+  //get input values in board
+  sudoku=Array.from(Array(9), () => new Array(9));
+  var inputs= document.getElementById("board").getElementsByTagName("input");
+  
+  for(var i=0;i<81;i++)
+  {
+  var index=parseInt(inputs[i].id.replace("i_", ""));
+  var index_y=index%9;
+  var index_x=index-index_y;
+  index_x=index_x/9;
+  
+  var value=inputs[i].value.toString();
+  if(value=='')
+  value=".";
+  sudoku[index_x][index_y]=value;
+  
+  }
+  
+  console.log( "First : "+sudoku);
+  
+  
+  /*
+     sudoku =   [
+                        [ '5', '3', '.', '.', '7', '.', '.', '.', '.' ],
+                        [ '6', '.', '.', '1', '9', '5', '.', '.', '.' ],
+                        [ '.', '9', '8', '.', '.', '.', '.', '6', '.' ],
+                        [ '8', '.', '.', '.', '6', '.', '.', '.', '3' ],
+                        [ '4', '.', '.', '8', '.', '3', '.', '.', '1' ],
+                        [ '7', '.', '.', '.', '2', '.', '.', '.', '6' ],
+                        [ '.', '6', '.', '.', '.', '.', '2', '8', '.' ],
+                        [ '.', '.', '.', '4', '1', '9', '.', '.', '5' ],
+                        [ '.', '.', '.', '.', '8', '.', '.', '7', '9' ]
+                 ];
+	*/			 
+				 
+				 
+				 
+				 
+				 
+				 
+            solveSudoku(sudoku);
+            WriteBoard(sudoku);       
+  });
+});
+
+function WriteBoard(sudoku)
+        {
+		
+           for (let i = 0; i < sudoku.length; i++)
+            {
+                for (let j = 0; j < sudoku.length; j++)
+                {
+				var index="i_"+(i*9+j);
+				//console.log(index+"=>"+sudoku[i][j]);
+				document.getElementById(index).value =sudoku[i][j];
+				}
+			}
+        }
+
+
+function solve( board)
+        {		
+            for (let i = 0; i < board.length; i++)
+            {
+                for (let j = 0; j < board.length; j++)
+                {
+				
+                    if (board[i][j] == '.')
+                    {
+                        for (let c = '1'; c <= '9'; c++)
+                        {
+                            if (isValid(board, i, j, c))
+                            {
+                                board[i][j]  = c;
+								var index="i_"+(i*9+j);
+								document.getElementById(index).style.color ="blue";
+                                if (solve(board))
+                                    return true;
+                                else
+                                    board[i][j]  = '.';
+                            }
+                        }
+                        return false;
+                    }
+                }
+            }
+			
+            return true;
+        }
+
+  function solveSudoku( board)
+        {
+            if (board == null || board.Length == 0)
+                return;
+            solve(board);
+        }
+
+function isValid(board, row, col,  c)
+        {
+		
+            for (let i = 0; i < 9; i++)
+            {
+			
+			
+                //check row  
+                if (board[i][col] != '.' && board[i][col] == c)
+                    return false;
+					
+                //check column  
+                if (board[row][i] != '.' && board[row][i] == c)
+                    return false;
+					
+                //check 3*3 block 
+
+var x=3 * Math.floor(row / 3) + Math.floor(i / 3);
+		
+var y=3 * Math.floor(col / 3) + i % 3;	
+
+
+				 if (board[x][y] != '.' && board[x][y] == c)
+                    return false;
+					
+            }
+			
+			
+            return true;
+        }
+
+
+function AddInputs()
+{
+var board = document.getElementById("board");
+var html="";
+for (let i = 0; i < 81; i++) {
+  html += "<li><input type='text' id='i_"+i+"' maxlength='1' onkeypress='return onlyNumberKey(event)'></li>";
+}
+board.innerHTML=html;
+}
+</script>
+
+
+</head>
+<body>
+<script>
+    function onlyNumberKey(evt) {
+          
+        // Only ASCII character in that range allowed
+        var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+            return false;
+        return true;
+    }
+</script>
+<main>
+<h1>SUDOKU SOLVER</h1>
+  <ul id="board">
+  
+  </ul>
+  <div class="note">
+   <button id=button1>Clear Board</button>
+  <button id=button2>Solve</button>
+ 
+ </div>
+
+</main>
+
+</body>
+</html>
